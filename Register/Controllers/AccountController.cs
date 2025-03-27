@@ -10,96 +10,122 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Register.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-      
-            private readonly IUserService _userService;
+        private readonly IUserService _userService;
         private readonly IUserRepository _userRepository;
 
         public AccountController(IUserService userService, IUserRepository userRepository)
-            {
-                _userService = userService;
+        {
+            _userService = userService;
             _userRepository = userRepository;
-            }
+        }
 
-            [HttpPost]
-            [Route("create")]
-            public async Task<System.Web.Http.IHttpActionResult> CreateAccount(CreateAccountDto dto)
-            {
-            // Generate verification codes and send them
+        // Endpoint to create an account
+        [HttpPost]
+        [Route("create")]
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountDto dto)
+        {
+            // Generate verification codes 
             var mobileVerificationCode = new Random().Next(100000, 999999).ToString();
             var emailVerificationCode = new Random().Next(100000, 999999).ToString();
-            List<string>codes = new List<string>();
-            codes.Add(mobileVerificationCode);
-            codes.Add(emailVerificationCode);
-            codes.Add(dto.MobileNumber);
-            codes.Add(dto.Email);   
+        
             var user = await _userService.CreateAccountAsync(dto,mobileVerificationCode,emailVerificationCode);
-                return (System.Web.Http.IHttpActionResult)Ok(codes);
-            }
 
+            var response = new CreateAccountResponseDto
+            {
+                User = user,
+                MobileCode = mobileVerificationCode,
+                EmailCode = emailVerificationCode
+            };
 
-            [HttpPost]
-            [Route("verify/mobile")]
-            public async Task<System.Web.Http.IHttpActionResult> VerifyMobile(string mobileNumber, string code , string mobileVerificationCode)
-            {
-            if (code != mobileVerificationCode)
-            {
-                return (System.Web.Http.IHttpActionResult)BadRequest("Code is not correct.Incorrect OTP");
-            }
-            var success = await _userService.VerifyMobileAsync(mobileNumber, code);
-                return (System.Web.Http.IHttpActionResult)Ok(success);
-            }
+            
+            return Ok(response);
 
-            [HttpPost]
-            [Route("verify/email")]
-            public async Task<System.Web.Http.IHttpActionResult> VerifyEmail(string email, string code, string emailVerificationCode)
-            {
-            if (code != emailVerificationCode)
-            {
-                return (System.Web.Http.IHttpActionResult)BadRequest("Code is not correct.Incorrect OTP");
-            }
-            var success = await _userService.VerifyEmailAsync(email, code);
-                return (System.Web.Http.IHttpActionResult)Ok(success);
-            }
-
-            [HttpPost]
-            [Route("set-pin")]
-        public async Task<System.Web.Http.IHttpActionResult> SetPin(string mobileNumber, string pin, string confirmPin)
-        {
-            if (pin != confirmPin)
-            {
-                return (System.Web.Http.IHttpActionResult)BadRequest("PIN and Confirm PIN do not match.");
-            }
-
-            var success = await _userService.SetPinAsync(mobileNumber, pin);
-            return (System.Web.Http.IHttpActionResult)Ok(success);
         }
+
+        // Verify mobile number
+        [HttpPost]
+        [Route("verify/mobile")]
+        public async Task<IActionResult> VerifyMobile([FromBody] VerifyMobileDto dto)
+        {
+            if (dto.Code != dto.MobileVerificationCode)
+            {
+                return BadRequest("Incorrect OTP for mobile verification.");
+            }
+
+            var success = await _userService.VerifyMobileAsync(dto.IcNumber);
+            return success ? Ok("Mobile number verified successfully.") : BadRequest("Failed to verify mobile number.");
+        }
+
+        // Verify email
+        [HttpPost]
+        [Route("verify/email")]
+        public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailDto dto)
+        {
+            if (dto.Code != dto.EmailVerificationCode)
+            {
+                return BadRequest("Incorrect OTP for email verification.");
+            }
+
+            var success = await _userService.VerifyEmailAsync(dto.IcNumber);
+            return success ? Ok("Email verified successfully.") : BadRequest("Failed to verify email.");
+        }
+
+        // Set PIN
+        [HttpPost]
+        [Route("set-pin")]
+        public async Task<IActionResult> SetPin([FromBody] SetPinDto dto)
+        {
+            if (dto.Pin != dto.ConfirmPin)
+            {
+                return BadRequest("PIN and Confirm PIN do not match.");
+            }
+
+            var success = await _userService.SetPinAsync(dto.MobileNumber, dto.Pin);
+            return success ? Ok("PIN set successfully.") : BadRequest("Failed to set PIN.");
+        }
+
+        // Login
         [HttpPost]
         [Route("login")]
-        public async Task<System.Web.Http.IHttpActionResult> Login(string ICNumber)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            var user = new User();
-            var success = await _userService.VerifyUserAsync(ICNumber);
-            if (success)
+            var user = await _userService.VerifyUserAsync(dto.ICNumber);
+
+            if (!user)
             {
-                user = await _userRepository.GetUserByICNuberAsync(ICNumber);
+                return Unauthorized("Invalid IC Number.");
             }
-             
-            return (System.Web.Http.IHttpActionResult)Ok(user);
+
+            var userDetails = await _userRepository.GetUserByICNuberAsync(dto.ICNumber);
+            return Ok(userDetails);
         }
+
+        // Agree to Privacy Policy
         [HttpPost]
         [Route("privacy-policy")]
-        public async Task<System.Web.Http.IHttpActionResult> PrivacyPolicy(string ICNumber)
+        public async Task<IActionResult> PrivacyPolicy([FromBody] PrivacyPolicyDto dto)
         {
-            var user = await _userRepository.GetUserByICNuberAsync(ICNumber);
+            var user = await _userRepository.GetUserByICNuberAsync(dto.ICNumber);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
             user.PrivacyPolicy = true;
-     
-            return (System.Web.Http.IHttpActionResult)Ok("Privacy Policy agreed");
+            return Ok("Privacy Policy agreed successfully.");
         }
+
+    
     }
-    }
+}
 
 

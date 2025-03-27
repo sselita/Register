@@ -8,7 +8,8 @@ namespace Application.DTOs
 {
     public class VerifyMobileDto
     {
-        public string MobileNumber { get; set; }
-        public string VerificationCode { get; set; }
+        public string IcNumber { get; set; }
+        public string Code { get; set; }
+        public string MobileVerificationCode { get; set; }
     }
 }

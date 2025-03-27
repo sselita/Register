@@ -8,7 +8,8 @@ namespace Application.DTOs
 {
     public class VerifyEmailDto
     {
-        public string Email { get; set; }
-        public string VerificationCode { get; set; }
+        public string IcNumber { get; set; }
+        public string Code { get; set; }
+        public string EmailVerificationCode { get; set; }
     }
 }

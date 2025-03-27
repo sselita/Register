@@ -12,8 +12,8 @@ namespace Core.Interfaces
     {
         Task<User> CreateAccountAsync(CreateAccountDto createAccountDto, string mobileVerificationCode, string emailVerificationCode);
         Task<bool> SetPinAsync(string mobileNumber, string pin);
-        Task<bool> VerifyEmailAsync(string email, string code);
-        Task<bool> VerifyMobileAsync(string mobileNumber, string code);
+        Task<bool> VerifyEmailAsync(string ICNumber);
+        Task<bool> VerifyMobileAsync(string ICNumber);
         Task<bool> VerifyUserAsync(string ICnumber);
     }
 }

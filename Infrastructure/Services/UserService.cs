@@ -47,10 +47,10 @@ namespace Application.Services
             return user;
         }
 
-        public async Task<bool> VerifyMobileAsync(string mobileNumber, string code)
+        public async Task<bool> VerifyMobileAsync(string ICNumber)
         {
           
-            var user = await _userRepository.GetUserByMobileNumberAsync(mobileNumber);
+            var user = await _userRepository.GetUserByICNuberAsync(ICNumber);
             if (user == null) return false;
 
             user.IsMobileVerified = true;
@@ -59,10 +59,10 @@ namespace Application.Services
             return true;
         }
 
-        public async Task<bool> VerifyEmailAsync(string email, string code)
+        public async Task<bool> VerifyEmailAsync(string ICNumber)
         {
           
-            var user = await _userRepository.GetUserByEmailAsync(email);
+            var user = await _userRepository.GetUserByICNuberAsync(ICNumber);
             if (user == null) return false;
 
             user.IsEmailVerified = true;
