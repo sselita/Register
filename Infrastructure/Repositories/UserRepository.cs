@@ -32,6 +32,10 @@ namespace Infrastructure.Repositories
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
+        public async Task<User> GetUserByICNuberAsync(string ICNumber)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.ICNumber == ICNumber);
+        }
 
         public async Task AddUserAsync(User user)
         {

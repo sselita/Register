@@ -1,6 +1,9 @@
+using System.Net.NetworkInformation;
 using Application.DTOs;
 using Application.Services;
+using Core.Entities;
 using Core.Interfaces;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -13,10 +16,12 @@ namespace Register.Controllers
     {
       
             private readonly IUserService _userService;
+        private readonly IUserRepository _userRepository;
 
-            public AccountController(IUserService userService)
+        public AccountController(IUserService userService, IUserRepository userRepository)
             {
                 _userService = userService;
+            _userRepository = userRepository;
             }
 
             [HttpPost]
@@ -35,11 +40,16 @@ namespace Register.Controllers
                 return (System.Web.Http.IHttpActionResult)Ok(codes);
             }
 
+
             [HttpPost]
             [Route("verify/mobile")]
             public async Task<System.Web.Http.IHttpActionResult> VerifyMobile(string mobileNumber, string code , string mobileVerificationCode)
-            {   
-                var success = await _userService.VerifyMobileAsync(mobileNumber, code,mobileVerificationCode);
+            {
+            if (code != mobileVerificationCode)
+            {
+                return (System.Web.Http.IHttpActionResult)BadRequest("Code is not correct.Incorrect OTP");
+            }
+            var success = await _userService.VerifyMobileAsync(mobileNumber, code);
                 return (System.Web.Http.IHttpActionResult)Ok(success);
             }
 
@@ -47,7 +57,11 @@ namespace Register.Controllers
             [Route("verify/email")]
             public async Task<System.Web.Http.IHttpActionResult> VerifyEmail(string email, string code, string emailVerificationCode)
             {
-                var success = await _userService.VerifyEmailAsync(email, code, emailVerificationCode);
+            if (code != emailVerificationCode)
+            {
+                return (System.Web.Http.IHttpActionResult)BadRequest("Code is not correct.Incorrect OTP");
+            }
+            var success = await _userService.VerifyEmailAsync(email, code);
                 return (System.Web.Http.IHttpActionResult)Ok(success);
             }
 
@@ -62,6 +76,28 @@ namespace Register.Controllers
 
             var success = await _userService.SetPinAsync(mobileNumber, pin);
             return (System.Web.Http.IHttpActionResult)Ok(success);
+        }
+        [HttpPost]
+        [Route("login")]
+        public async Task<System.Web.Http.IHttpActionResult> Login(string ICNumber)
+        {
+            var user = new User();
+            var success = await _userService.VerifyUserAsync(ICNumber);
+            if (success)
+            {
+                user = await _userRepository.GetUserByICNuberAsync(ICNumber);
+            }
+             
+            return (System.Web.Http.IHttpActionResult)Ok(user);
+        }
+        [HttpPost]
+        [Route("privacy-policy")]
+        public async Task<System.Web.Http.IHttpActionResult> PrivacyPolicy(string ICNumber)
+        {
+            var user = await _userRepository.GetUserByICNuberAsync(ICNumber);
+            user.PrivacyPolicy = true;
+     
+            return (System.Web.Http.IHttpActionResult)Ok("Privacy Policy agreed");
         }
     }
     }

@@ -15,7 +15,9 @@ namespace Core.Entities
             public string Email { get; set; }
             public bool IsMobileVerified { get; set; }
             public bool IsEmailVerified { get; set; }
-            public string Pin { get; set; }
-        }
+           public string Pin { get; set; }
+           public bool PrivacyPolicy { get; set; }
+
     }
+}
 

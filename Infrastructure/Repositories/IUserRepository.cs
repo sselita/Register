@@ -9,5 +9,6 @@ namespace Infrastructure.Repositories
         Task<User> GetUserByIdAsync(int userId);
         Task<User> GetUserByMobileNumberAsync(string mobileNumber);
         Task UpdateUserAsync(User user);
+        Task<User> GetUserByICNuberAsync(string ICNumber);
     }
 }

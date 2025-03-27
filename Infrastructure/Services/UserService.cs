@@ -47,9 +47,9 @@ namespace Application.Services
             return user;
         }
 
-        public async Task<bool> VerifyMobileAsync(string mobileNumber, string code,string mobileVerificationCode)
+        public async Task<bool> VerifyMobileAsync(string mobileNumber, string code)
         {
-            if (mobileVerificationCode != code) return false;
+          
             var user = await _userRepository.GetUserByMobileNumberAsync(mobileNumber);
             if (user == null) return false;
 
@@ -59,9 +59,9 @@ namespace Application.Services
             return true;
         }
 
-        public async Task<bool> VerifyEmailAsync(string email, string code , string emailVerificationCode)
+        public async Task<bool> VerifyEmailAsync(string email, string code)
         {
-            if (emailVerificationCode != code) return false;
+          
             var user = await _userRepository.GetUserByEmailAsync(email);
             if (user == null) return false;
 
@@ -78,6 +78,17 @@ namespace Application.Services
 
             user.Pin = pin;
             await _userRepository.UpdateUserAsync(user);
+
+            return true;
+        }
+        public async Task<bool> VerifyUserAsync(string ICnumber)
+        {
+
+            var user = await _userRepository.GetUserByICNuberAsync(ICnumber);
+            if (user == null) return false;
+
+          
+          
 
             return true;
         }
