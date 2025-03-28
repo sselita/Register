@@ -29,12 +29,13 @@ namespace Application.Services
             var user = new User
             {
                 Id = Guid.NewGuid(),
+                CustomerName = createAccountDto.CustomerName,
                 ICNumber = createAccountDto.ICNumber,
                 MobileNumber = createAccountDto.MobileNumber,
                 Email = createAccountDto.Email,
                 IsMobileVerified = false,
                 IsEmailVerified = false,
-                Pin = "null"
+                Pin = ""
             };
 
             await _userRepository.AddUserAsync(user);
@@ -81,6 +82,7 @@ namespace Application.Services
 
             return true;
         }
+
         public async Task<bool> VerifyUserAsync(string ICnumber)
         {
 

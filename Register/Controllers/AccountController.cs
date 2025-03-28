@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Register.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.OpenApi.Validations;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -34,10 +35,15 @@ namespace Register.Controllers
         public async Task<IActionResult> CreateAccount([FromBody] CreateAccountDto dto)
         {
             // Generate verification codes 
-            var mobileVerificationCode = new Random().Next(100000, 999999).ToString();
-            var emailVerificationCode = new Random().Next(100000, 999999).ToString();
-        
-            var user = await _userService.CreateAccountAsync(dto,mobileVerificationCode,emailVerificationCode);
+            var mobileVerificationCode = new Random().Next(0, 10000).ToString("D4");
+            var emailVerificationCode = new Random().Next(0, 10000).ToString("D4");
+
+            var user = await _userRepository.GetUserByICNuberAsync(dto.ICNumber);
+            if (user != null)
+            {
+                return BadRequest($"User with IC Number: {dto.ICNumber} already exists.");
+            }
+            user = await _userService.CreateAccountAsync(dto,mobileVerificationCode,emailVerificationCode);
 
             var response = new CreateAccountResponseDto
             {
@@ -98,6 +104,10 @@ namespace Register.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
+            // Generate verification codes 
+            var mobileVerificationCode = new Random().Next(0, 10000).ToString("D4");
+            var emailVerificationCode = new Random().Next(0, 10000).ToString("D4");
+
             var user = await _userService.VerifyUserAsync(dto.ICNumber);
 
             if (!user)
@@ -106,7 +116,15 @@ namespace Register.Controllers
             }
 
             var userDetails = await _userRepository.GetUserByICNuberAsync(dto.ICNumber);
-            return Ok(userDetails);
+            var response = new CreateAccountResponseDto
+            {
+                User = userDetails,
+                MobileCode = mobileVerificationCode,
+                EmailCode = emailVerificationCode
+            };
+
+
+            return Ok(response);
         }
 
         // Agree to Privacy Policy
@@ -121,6 +139,8 @@ namespace Register.Controllers
             }
 
             user.PrivacyPolicy = true;
+            await _userRepository.UpdateUserAsync(user);
+
             return Ok("Privacy Policy agreed successfully.");
         }
 

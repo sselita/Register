@@ -16,12 +16,14 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ICNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MobileNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsMobileVerified = table.Column<bool>(type: "bit", nullable: false),
                     IsEmailVerified = table.Column<bool>(type: "bit", nullable: false),
-                    Pin = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Pin = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PrivacyPolicy = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

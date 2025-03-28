@@ -12,11 +12,19 @@ namespace Infrastructure.Services
 {
     public class EmailService : IEmailService
     {
+        //Email > Go to Security > Advanced Security Options.
+        //Enable Two-Step Verification(if not already enabled).
+
+        //Generate an app password for your application.
+        //SMTP Username and Password:
+        //SMTP Username: Your Outlook email address (e.g., your_email @outlook.com or your_email @yourdomain.com).
+        //SMTP Password: The app password you generated or your account password(if 2FA is not enabled).
+
         public async Task SendVerificationEmail(string email, string code)
         {
-            string fromName = "";
-            string fromEmail = "";
-            string smtpHost = "smtp.example.com";
+            string fromName = "Stiv";
+            string fromEmail = "selitastiv@gmail.com";
+            string smtpHost = "smtp.office365.com";
             int smtpPort = 587;
             string smtpUsername = "your_smtp_username";
             string smtpPassword = "your_smtp_password";
@@ -39,14 +47,14 @@ namespace Infrastructure.Services
 
                 message.Body = body;
 
-                // Send the email using SMTP with MailKit
+                // Send the email 
                 using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {
                     // Connect to the SMTP server
-                    client.Connect(smtpHost, smtpPort, true);  // 'true' indicates SSL/TLS
+                    client.Connect(smtpHost, smtpPort, true);
                     client.Authenticate(smtpUsername, smtpPassword);
                     client.Send(message);
-                    client.Disconnect(true);  // Disconnect after sending the email
+                    client.Disconnect(true);
                 }
 
                 // Optionally log that the message was sent
