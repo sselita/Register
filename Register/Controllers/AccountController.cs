@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Register.Controllers
 {
+    using Infrastructure.Services;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.OpenApi.Validations;
     using System;
@@ -22,11 +23,16 @@ namespace Register.Controllers
     {
         private readonly IUserService _userService;
         private readonly IUserRepository _userRepository;
+        private readonly IEmailService _emailService;
+        private readonly ISmsService _smsService;
 
-        public AccountController(IUserService userService, IUserRepository userRepository)
+        public AccountController(IUserService userService, IUserRepository userRepository,EmailService emailService,ISmsService smsService)
+      
         {
             _userService = userService;
             _userRepository = userRepository;
+            _emailService = emailService;
+            _smsService = smsService;   
         }
 
         // Endpoint to create an account
@@ -123,7 +129,8 @@ namespace Register.Controllers
                 EmailCode = emailVerificationCode
             };
 
-
+            await _smsService.SendVerificationSms(userDetails.MobileNumber, mobileVerificationCode);
+            await _emailService.SendVerificationEmail(userDetails.Email, emailVerificationCode);
             return Ok(response);
         }
 

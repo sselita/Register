@@ -26,8 +26,8 @@ namespace Infrastructure.Services
             string fromEmail = "selitastiv@gmail.com";
             string smtpHost = "smtp.office365.com";
             int smtpPort = 587;
-            string smtpUsername = "your_smtp_username";
-            string smtpPassword = "your_smtp_password";
+            string smtpUsername = "selitastiv";
+            string smtpPassword = "password";
 
             try
             {

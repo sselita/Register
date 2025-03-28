@@ -20,26 +20,21 @@ namespace Infrastructure.Services
         //Create an account(or log in if you already have one).
 
         //Retrieve your:
-
         //Account SID
-
         //Auth Token
-
         //Twilio Phone Number These are available in your Twilio dashboard.
 
         //3. Replace Placeholder Values
         //Update the method with your Twilio credentials:
-
         //Replace accountSid with your actual Account SID.
-
         //Replace authToken with your Auth Token.
-
         //Replace +from with your Twilio phone number (in E.164 format).
+
         public async Task SendVerificationSms(string mobileNumber, string code)
         {
-            var accountSid = "12345";
-            var authToken = "12345";
-            var from = "04304035";
+            var accountSid = "00856589";
+            var authToken = "f1c64b19-1cf1-451b-a36f-d88cffdbd74c";
+            var from = "00355682017197";
             try
             {
                 // Initialize Twilio Client with provided credentials
