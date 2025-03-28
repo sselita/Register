@@ -26,7 +26,7 @@ namespace Register.Controllers
         private readonly IEmailService _emailService;
         private readonly ISmsService _smsService;
 
-        public AccountController(IUserService userService, IUserRepository userRepository,EmailService emailService,ISmsService smsService)
+        public AccountController(IUserService userService, IUserRepository userRepository,IEmailService emailService,ISmsService smsService)
       
         {
             _userService = userService;
