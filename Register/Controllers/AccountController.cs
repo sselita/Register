@@ -44,7 +44,7 @@ namespace Register.Controllers
             var mobileVerificationCode = new Random().Next(0, 10000).ToString("D4");
             var emailVerificationCode = new Random().Next(0, 10000).ToString("D4");
 
-            var user = await _userRepository.GetUserByICNuberAsync(dto.ICNumber);
+            var user = await _userService.GetUserAsync(dto.ICNumber);
             if (user != null)
             {
                 return BadRequest($"User with IC Number: {dto.ICNumber} already exists.");
@@ -121,7 +121,7 @@ namespace Register.Controllers
                 return Unauthorized("Invalid IC Number.");
             }
 
-            var userDetails = await _userRepository.GetUserByICNuberAsync(dto.ICNumber);
+            var userDetails = await _userService.GetUserAsync(dto.ICNumber);
             var response = new CreateAccountResponseDto
             {
                 User = userDetails,
@@ -139,7 +139,7 @@ namespace Register.Controllers
         [Route("privacy-policy")]
         public async Task<IActionResult> PrivacyPolicy([FromBody] PrivacyPolicyDto dto)
         {
-            var user = await _userRepository.GetUserByICNuberAsync(dto.ICNumber);
+            var user = await _userService.GetUserAsync(dto.ICNumber);
             if (user == null)
             {
                 return NotFound("User not found.");

@@ -59,7 +59,17 @@ namespace Application.Services
 
             return true;
         }
+        public async Task<User> GetUserAsync(string ICNumber)
+        {
 
+            var user = await _userRepository.GetUserByICNuberAsync(ICNumber);
+            if (user != null) 
+
+            user.IsMobileVerified = true;
+            await _userRepository.UpdateUserAsync(user);
+
+            return user;
+        }
         public async Task<bool> VerifyEmailAsync(string ICNumber)
         {
           

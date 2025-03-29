@@ -15,5 +15,6 @@ namespace Core.Interfaces
         Task<bool> VerifyEmailAsync(string ICNumber);
         Task<bool> VerifyMobileAsync(string ICNumber);
         Task<bool> VerifyUserAsync(string ICnumber);
+        Task<User> GetUserAsync(string ICNumber);
     }
 }
